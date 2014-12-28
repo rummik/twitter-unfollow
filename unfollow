@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+
+var _ = require('lodash');
+var Twit = require('twit');
+var twit = new Twit(require('./config.json'));
+
+var options = {
+	count: 5000,
+	stringify_ids: true,
+};
+
+var rate = 120;
+
+var friends = [];
+var followers = [];
+
+twit.get('friends/ids', options, function(err, friends) {
+	twit.get('followers/ids', options, function(err, followers) {
+		var nonfollowers = _.difference(friends.ids, followers.ids);
+
+		console.log('Unfollowing', nonfollowers.length, 'non-followers');
+
+		var count = 0;
+		var length = nonfollowers.length;
+
+		(function loop() {
+			if (nonfollowers.length == 0) {
+				console.log('Done.');
+				return;
+			}
+
+			var id = nonfollowers.shift();
+
+			twit.post('friendships/destroy', { user_id: id }, function(err, data, res) {
+				console.log('%d/%d (%d remain)', ++count, length, length - count);
+			});
+
+			setTimeout(loop, rate * 1000);
+		})();
+	});
+});
+
+// vim: set ft=javascript :
