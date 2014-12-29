@@ -15,4 +15,9 @@ twitter-unfollow
     }
     ```
     
-4. Run `node unfollow` in a terminal
+4. Open a terminal and navigate to the location you've checked out twitter-unfollow, and run the following:
+
+    ```
+    npm install
+    node unfollow
+    ```
